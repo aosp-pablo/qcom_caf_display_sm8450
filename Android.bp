@@ -73,12 +73,10 @@ qtidisplay_prebuilt_defaults {
 qtidisplay_cc_defaults {
     name: "qtidisplay_common_defaults",
     cflags: [
-        "-O3",
         "-Wno-missing-field-initializers",
         "-Wall",
         "-Werror",
     ],
-    lto_Instr100: true,
     shared_libs: [
         "liblog",
         "libcutils",

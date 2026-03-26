@@ -104,7 +104,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.sf.high_fps_late_sf_phase_offset_ns=-2000000 \
     debug.sf.high_fps_early_phase_offset_ns=-4000000 \
     debug.sf.high_fps_early_gl_phase_offset_ns=-2000000 \
-    debug.sf.disable_client_composition_cache=1 \
+    debug.sf.disable_client_composition_cache=0 \
     debug.sf.enable_gl_backpressure=1 \
     debug.sf.enable_advanced_sf_phase_offset=1 \
     debug.sf.predict_hwc_composition_strategy=0 \
@@ -141,15 +141,17 @@ ifneq ($(PLATFORM_VERSION), 10)
     PRODUCT_PROPERTY_OVERRIDES +=  vendor.display.enable_async_powermode=0
 endif
 
-ifeq ($(TARGET_BOARD_PLATFORM),parrot)
+ifeq ($(filter $(TARGET_BOARD_PLATFORM), parrot taro),$(TARGET_BOARD_PLATFORM))
 PRODUCT_PROPERTY_OVERRIDES += \
     debug.sf.enable_hwc_vds=false \
-    vendor.display.vds_allow_hwc=true \
+    vendor.display.vds_allow_hwc=true
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM),parrot)
+PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.sf.color_mode=7
 else
 PRODUCT_PROPERTY_OVERRIDES += \
-    debug.sf.enable_hwc_vds=1 \
-    vendor.display.vds_allow_hwc=0 \
     persist.sys.sf.color_mode=9
 endif
 
@@ -213,7 +215,7 @@ endif
 SOONG_CONFIG_NAMESPACES += qtidisplay
 
 # Soong Keys
-SOONG_CONFIG_qtidisplay := drmpp headless llvmsa gralloc4 displayconfig_enabled udfps default var1 var2 var3 panel_dimension_extra_precision sdmcore_has_is_display_hw_available_func
+SOONG_CONFIG_qtidisplay := drmpp headless llvmsa gralloc4 displayconfig_enabled udfps default var1 var2 var3
 
 # Soong Values
 SOONG_CONFIG_qtidisplay_drmpp := true
@@ -226,23 +228,9 @@ SOONG_CONFIG_qtidisplay_default := true
 SOONG_CONFIG_qtidisplay_var1 := false
 SOONG_CONFIG_qtidisplay_var2 := false
 SOONG_CONFIG_qtidisplay_var3 := false
-SOONG_CONFIG_qtidisplay_panel_dimension_extra_precision := false
-SOONG_CONFIG_qtidisplay_sdmcore_has_is_display_hw_available_func := true
 
 ifeq ($(call is-vendor-board-platform,QCOM),true)
     SOONG_CONFIG_qtidisplay_displayconfig_enabled := true
-endif
-
-ifeq ($(TARGET_PANEL_DIMENSION_HAS_EXTRA_PRECISION), true)
-    SOONG_CONFIG_qtidisplay_panel_dimension_extra_precision := true
-endif
-
-ifeq ($(TARGET_SDMCORE_HAS_IS_DISPLAY_HW_AVAILABLE_FUNC), false)
-    SOONG_CONFIG_qtidisplay_sdmcore_has_is_display_hw_available_func := false
-endif
-
-ifeq ($(TARGET_USES_FOD_ZPOS), true)
-    SOONG_CONFIG_qtidisplay_udfps := true
 endif
 
 # Techpack values
@@ -281,3 +269,15 @@ QMAA_ENABLED_HAL_MODULES += display
 
 # Properties using default value:
 #    vendor.display.disable_hw_recovery=0
+#
+
+SOONG_CONFIG_NAMESPACES += qtidisplaycomposer
+SOONG_CONFIG_qtidisplaycomposer += qtidisplaycomposertargets
+
+ifeq ($(PLATFORM_VERSION), $(filter $(PLATFORM_VERSION),S 12))
+  SOONG_CONFIG_qtidisplaycomposer_qtidisplaycomposertargets := qtidisplaycomposertarget_PLATFORM_VERSION_12
+endif
+
+ifeq ($(PLATFORM_VERSION), $(filter $(PLATFORM_VERSION),T 13))
+  SOONG_CONFIG_qtidisplaycomposer_qtidisplaycomposertargets := qtidisplaycomposertarget_PLATFORM_VERSION_13
+endif

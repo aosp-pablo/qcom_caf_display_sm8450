@@ -89,7 +89,7 @@ case "$target" in
         setprop vendor.display.enable_allow_idle_fallback 1
         setprop vendor.display.enable_perf_hint_large_comp_cycle 0
         setprop vendor.display.enable_rotator_ui 1
-        setprop vendor.display.enable_spec_fence 1
+        setprop vendor.display.enable_spec_fence 0
         setprop vendor.display.thermal.version 1
         setprop vendor.display.enable_rc_support 1
         setprop vendor.display.target.version 3
@@ -102,7 +102,7 @@ case "$target" in
         setprop vendor.display.enable_allow_idle_fallback 1
         setprop vendor.display.enable_perf_hint_large_comp_cycle 0
         setprop vendor.display.enable_rotator_ui 1
-        setprop vendor.display.enable_spec_fence 1
+        setprop vendor.display.enable_spec_fence 0
         setprop vendor.display.thermal.version 1
         setprop vendor.display.enable_rc_support 1
         setprop vendor.display.target.version 2
@@ -118,7 +118,7 @@ case "$target" in
         setprop vendor.display.enable_allow_idle_fallback 1
         setprop vendor.display.enable_perf_hint_large_comp_cycle 0
         setprop vendor.display.enable_rotator_ui 1
-        setprop vendor.display.enable_spec_fence 1
+        setprop vendor.display.enable_spec_fence 0
         setprop vendor.display.thermal.version 1
         setprop vendor.display.enable_rc_support 1
         setprop vendor.display.target.version 2
@@ -150,12 +150,13 @@ case "$target" in
         setprop vendor.display.disable_non_wfd_vds 1
         setprop vendor.display.supports_background_blur 0
         ;;
-        568|602|653|654)
+        568|602|653|654|734)
         # Set property for Ravelin
         # SOC ID for Ravelin is 568
         # SOC ID for Ravelin APQ is 602
         # SOC ID for SG_RAVELIN is 653
         # SOC ID for SG_RAVELINP is 654
+        # SOC ID for RAVELIN IOT is 734
         setprop vendor.gralloc.use_dma_buf_heaps 1
         setprop vendor.display.enable_posted_start_dyn 2
         setprop vendor.display.enable_allow_idle_fallback 1

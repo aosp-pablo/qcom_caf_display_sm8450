@@ -1,20 +1,35 @@
 composer_srcs = ["*.cpp"]
 
 soong_config_module_type {
-    name: "dolby_vision_cc_defaults",
+    name: "qtidisplaycomposer_cc_defaults",
     module_type: "cc_defaults",
-    config_namespace: "dolby_vision",
-    bool_variables: ["enabled"],
-    properties: ["cflags"],
+    config_namespace: "qtidisplaycomposer",
+    variables: ["qtidisplaycomposertargets"],
+    properties: ["shared_libs"],
 }
 
-dolby_vision_cc_defaults {
-    name: "dolby_vision_defaults",
+soong_config_string_variable {
+    name: "qtidisplaycomposertargets",
+    values: ["qtidisplaycomposertarget_PLATFORM_VERSION_12",
+             "qtidisplaycomposertarget_PLATFORM_VERSION_13"],
+}
+
+qtidisplaycomposer_cc_defaults {
+    name: "qtidisplaycomposer_defaults",
     soong_config_variables: {
-        enabled: {
-            cflags: [
-                "-DTARGET_SUPPORTS_DOLBY_VISION",
-            ],
+        qtidisplaycomposertargets: {
+            qtidisplaycomposertarget_PLATFORM_VERSION_12: {
+                 shared_libs: [
+                       "android.hardware.common-V2-ndk_platform",
+                       "vendor.qti.hardware.display.config-V5-ndk_platform",
+                  ],
+            },
+            qtidisplaycomposertarget_PLATFORM_VERSION_13: {
+                 shared_libs: [
+                       "android.hardware.common-V2-ndk",
+                       "vendor.qti.hardware.display.config-V5-ndk",
+                  ],
+            },
         },
     },
 }
@@ -22,7 +37,7 @@ dolby_vision_cc_defaults {
 cc_binary {
 
     name: "vendor.qti.hardware.display.composer-service",
-    defaults: ["qtidisplay_defaults", "dolby_vision_defaults"],
+    defaults: ["qtidisplay_defaults", "qtidisplaycomposer_defaults"],
     sanitize: {
         integer_overflow: true,
     },
@@ -36,11 +51,11 @@ cc_binary {
     ],
 
     cflags: [
+        "-Wno-format",
         "-Wno-missing-field-initializers",
         "-Wno-unused-parameter",
         "-DLOG_TAG=\"SDM\"",
     ],
-    clang: true,
 
     shared_libs: [
         "libbinder",

@@ -360,7 +360,7 @@ void HWCSession::InitSupportedDisplaySlots() {
 
   // Init slots in accordance to h/w capability.
   uint32_t disp_count = UINT32(std::min(max_pluggable, HWCCallbacks::kNumPluggable));
-  hwc2_display_t base_id = qdutils::DISPLAY_EXTERNAL;
+  hwc2_display_t base_id = HWC_DISPLAY_EXTERNAL;
   // if external displays are ZERO, then initialize it to 2 as 1 is reserved for external.
   if (!disp_count) {
     base_id = qdutils::DISPLAY_BUILTIN_2 - 1;
@@ -371,12 +371,14 @@ void HWCSession::InitSupportedDisplaySlots() {
     map_info.client_id = base_id++;
   }
 
+  base_id = HWC_DISPLAY_BUILTIN_2;
   disp_count = UINT32(std::min(max_builtin, HWCCallbacks::kNumBuiltIn));
   map_info_builtin_.resize(disp_count);
   for (auto &map_info : map_info_builtin_) {
     map_info.client_id = base_id++;
   }
 
+  base_id = HWC_DISPLAY_VIRTUAL;
   disp_count = UINT32(std::min(max_virtual, HWCCallbacks::kNumVirtual));
   map_info_virtual_.resize(disp_count);
   for (auto &map_info : map_info_virtual_) {
@@ -1273,7 +1275,8 @@ int32_t HWCSession::GetDozeSupport(hwc2_display_t display, int32_t *out_support)
     return HWC2_ERROR_NONE;
   }
 
-  *out_support = hwc_display_[display]->HasSmartPanelConfig() ? 1 : 0;
+  *out_support = hwc_display_[display]->HasOverridenDozeMode() ||
+                 hwc_display_[display]->HasSmartPanelConfig() ? 1 : 0;
 
   return HWC2_ERROR_NONE;
 }
@@ -3247,7 +3250,7 @@ void HWCSession::HandleSecureSession() {
     }
   }
   if (is_active_virtual_display) {
-    auto error = DestroyVirtualDisplay(client_id);
+    [[maybe_unused]] auto error = DestroyVirtualDisplay(client_id);
   }
 
   // If it is called during primary prepare/commit, we need to pause any ongoing commit on
@@ -3785,7 +3788,7 @@ int HWCSession::WaitForResources(bool wait_for_resources, hwc2_display_t active_
             cached_retire_fence_) {
           Fence::Wait(cached_retire_fence_);
         }
-        cached_retire_fence_ == nullptr;
+        cached_retire_fence_ = nullptr;
       }
       {
         SCOPE_LOCK(locker_[display_id]);
